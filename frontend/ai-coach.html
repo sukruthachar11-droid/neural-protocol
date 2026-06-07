@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEURAL PROTOCOL // AI COACH</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,300;0,400;0,600;0,700;0,900;1,700;1,900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets (order matters) -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/sidebar.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/rightpanel.css" />
+
+  <style>
+    /* ── AI Coach Chat Portal ── */
+
+    .coach-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 120px);
+      gap: 0;
+      margin-top: 20px;
+    }
+
+    /* Coach header bar */
+    .coach-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      padding: 14px 20px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .coach-header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--green);
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+    }
+
+    .coach-identity {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .coach-avatar {
+      width: 44px;
+      height: 44px;
+      background: var(--panel);
+      border: 1px solid rgba(0, 255, 136, 0.4);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .coach-avatar::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      background: transparent;
+      border: 1px solid rgba(0, 255, 136, 0.15);
+    }
+
+    .coach-name {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 900;
+      font-style: italic;
+      color: var(--green);
+      text-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .coach-subtitle {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+
+    .coach-status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--green);
+      letter-spacing: 1px;
+    }
+
+    .coach-status-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--green);
+      animation: pulseDot 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    /* Chat window */
+    .chat-window {
+      flex: 1;
+      overflow-y: auto;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-bottom: none;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-window::-webkit-scrollbar       { width: 3px; }
+    .chat-window::-webkit-scrollbar-track { background: transparent; }
+    .chat-window::-webkit-scrollbar-thumb { background: var(--red-dim); }
+
+    /* Message bubbles */
+    .msg {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 80%;
+      animation: msgIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg.coach {
+      align-self: flex-start;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+    }
+
+    .msg-meta {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .msg.user .msg-meta {
+      text-align: right;
+    }
+
+    .msg-bubble {
+      padding: 12px 16px;
+      font-family: var(--body);
+      font-size: 14px;
+      line-height: 1.55;
+      position: relative;
+    }
+
+    .msg.coach .msg-bubble {
+      background: var(--bg2);
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      border-left: 3px solid var(--green);
+      color: var(--text);
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.4), 0 0 8px rgba(0, 255, 136, 0.05);
+    }
+
+    .msg.user .msg-bubble {
+      background: rgba(255, 26, 26, 0.06);
+      border: 1px solid rgba(255, 26, 26, 0.3);
+      border-right: 3px solid var(--red);
+      color: var(--text);
+      box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 14px 16px;
+      background: var(--bg2);
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      border-left: 3px solid var(--green);
+      align-self: flex-start;
+      max-width: 80px;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: typingBounce 1.2s ease-in-out infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+      30%            { transform: translateY(-6px); opacity: 1; }
+    }
+
+    /* Quick prompt chips */
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px 20px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-bottom: none;
+      flex-shrink: 0;
+    }
+
+    .chip {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 5px 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      cursor: pointer;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .chip:hover {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(0, 255, 136, 0.04);
+      box-shadow: 0 0 6px rgba(0, 255, 136, 0.15);
+    }
+
+    /* Input area */
+    .chat-input-area {
+      display: flex;
+      gap: 0;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-top: 1px solid rgba(0, 255, 136, 0.2);
+      flex-shrink: 0;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 16px 20px;
+      font-family: var(--body);
+      font-size: 14px;
+      color: var(--text);
+      caret-color: var(--green);
+    }
+
+    .chat-input::placeholder {
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .chat-send-btn {
+      background: transparent;
+      border: none;
+      border-left: 1px solid var(--border);
+      padding: 0 24px;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: bold;
+      color: var(--green);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .chat-send-btn:hover {
+      background: rgba(0, 255, 136, 0.06);
+      color: var(--text);
+    }
+
+    .chat-send-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    /* Toast (matches other pages) */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0d0d0d;
+      border: 1px solid var(--border);
+      padding: 16px 24px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 1px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 255, 136, 0.1);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: var(--green);
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ════════════════════════════════════
+       LEFT SIDEBAR
+  ════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <div class="sidebar-logo">
+      <div class="logo-icon"></div>
+      <div class="logo-text">Neural Protocol</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-section">
+      <a href="index.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+        <span>Configure Plan</span>
+      </a>
+
+      <a href="workout-display.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        <span>Active Protocol</span>
+      </a>
+
+      <a href="profile.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+        <span>User Dashboard</span>
+      </a>
+
+      <a href="sweat-to-earn.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+        </svg>
+        <span>Sweat to Earn</span>
+      </a>
+
+      <a href="duels.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v3c0 2.44 1.72 4.48 4 4.88V19H5v2h14v-2h-2v-4.12c2.28-.4 4-2.44 4-4.88V7c0-1.1-.9-2-2-2zM5 10V7h2v3H5zm14 0h-2V7h2v3z"/>
+        </svg>
+        <span>Community Duels</span>
+      </a>
+
+      <a href="ai-coach.html" class="nav-item active">
+        <svg viewBox="0 0 24 24">
+          <path d="M13 3C9.23 3 6.19 5.95 6 9.67l-1.92 2.53c-.24.31-.03.8.36.8H6v3c0 1.1.9 2 2 2h1v3h7v-4.08c2.34-.97 4-3.29 4-5.92 0-3.87-3.13-7-7-7zm-1 11h-2v-2h2v2zm0-4h-2V6h2v4z"/>
+        </svg>
+        <span>AI Coach</span>
+      </a>
+
+      <a href="form-check.html" class="nav-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+        </svg>
+        <span>AI Form Scanner</span>
+      </a>
+
+      <a href="workout-player.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <span>Active Player</span>
+      </a>
+
+      <a href="history.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+        <span>Protocol History</span>
+      </a>
+
+      <a href="settings.html" class="nav-item">
+        <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+        <span>System Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="asset-label">Stored Assets</div>
+      <div>
+        <span class="asset-value" id="totalXP">2,475</span>
+        <span class="asset-unit">$SWT</span>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════ -->
+  <main class="main" style="justify-content: flex-start; padding-top: 50px;">
+    <div class="main-content" style="max-width: 100%; width: 100%; display: flex; flex-direction: column; height: calc(100vh - 50px);">
+
+      <div class="phase-label">PHASE_06 // ADAPTIVE_GUIDE</div>
+      <div class="main-title" style="font-size: clamp(28px, 4vw, 52px); line-height: 1.05; margin-bottom: 4px;">NEURAL<br>COACH</div>
+      <div class="main-subtitle">ADAPTIVE GUIDE // REAL-TIME PROTOCOL CALIBRATION</div>
+
+      <!-- Chat Portal -->
+      <div class="coach-wrapper">
+
+        <!-- Coach header -->
+        <div class="coach-header">
+          <div class="coach-identity">
+            <div class="coach-avatar">🧠</div>
+            <div>
+              <div class="coach-name">Neural Coach</div>
+              <div class="coach-subtitle">ADAPTIVE_GUIDE // SEC_LEVEL_06 // PROTOCOL_ENGINE v2.4</div>
+            </div>
+          </div>
+          <div class="coach-status-badge">
+            <div class="coach-status-dot"></div>
+            ONLINE
+          </div>
+        </div>
+
+        <!-- Scrollable chat window -->
+        <div class="chat-window" id="chatWindow">
+          <!-- Messages rendered by JS -->
+        </div>
+
+        <!-- Quick prompt chips -->
+        <div class="chips-row" id="chipsRow">
+          <button class="chip" onclick="sendChip(this)">I only slept 4 hours</button>
+          <button class="chip" onclick="sendChip(this)">My knee hurts today</button>
+          <button class="chip" onclick="sendChip(this)">I'm feeling energized</button>
+          <button class="chip" onclick="sendChip(this)">I'm too stressed to train</button>
+          <button class="chip" onclick="sendChip(this)">What should I eat pre-workout?</button>
+          <button class="chip" onclick="sendChip(this)">Motivate me</button>
+          <button class="chip" onclick="sendChip(this)">I feel weak today</button>
+          <button class="chip" onclick="sendChip(this)">Push me harder</button>
+        </div>
+
+        <!-- Input area -->
+        <div class="chat-input-area">
+          <input
+            type="text"
+            class="chat-input"
+            id="chatInput"
+            placeholder="TRANSMIT CONDITION // e.g. 'I only slept 4 hours, adjust my session'..."
+            autocomplete="off"
+          />
+          <button class="chat-send-btn" id="sendBtn" onclick="handleSend()">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            TRANSMIT
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ════════════════════════════════════
+       RIGHT PANEL
+  ════════════════════════════════════ -->
+  <aside class="right-panel">
+
+    <!-- Vertical progress bar -->
+    <div class="right-bar">
+      <div class="right-bar-fill" id="rightBarFill" style="height:82%"></div>
+    </div>
+
+    <!-- SYNC.VIBE -->
+    <div class="rp-section">
+      <div class="rp-label">
+        <span>Sync.Vibe</span>
+        <span class="live-badge">
+          <span class="live-dot"></span>LIVE
+        </span>
+      </div>
+      <div>
+        <span class="bpm-value" id="bpmValue">138</span>
+        <span class="bpm-unit">BPM</span>
+      </div>
+      <div class="waveform">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+    </div>
+
+    <!-- RECOVERY.BIO -->
+    <div class="rp-section">
+      <div class="rp-label"><span>Recovery.Bio</span></div>
+      <div style="display:flex; align-items:baseline; gap:4px">
+        <div class="readiness-number" id="readinessNumber">76</div>
+        <div class="readiness-denom">/ 100%</div>
+      </div>
+      <div class="readiness-sub" id="readinessStatus">
+        Neural Load Optimized. Intensity Boost<br>
+        <span class="readiness-status" style="color:#00FF88">Ready for Protocol.</span>
+      </div>
+    </div>
+
+    <!-- Stats 2×2 -->
+    <div class="stats-grid">
+      <div class="stat-cell">
+        <div class="stat-cell-label">Calories</div>
+        <div>
+          <span class="stat-cell-value" id="statCal">2,840</span>
+          <span class="stat-cell-unit">kcal</span>
+        </div>
+        <div class="stat-cell-change change-up">▲ 4.2%</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-cell-label">Active Days</div>
+        <div>
+          <span class="stat-cell-value" id="statDays">18</span>
+          <span class="stat-cell-unit">days</span>
+        </div>
+        <div class="stat-cell-change change-up">▲ streak</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-cell-label">Avg Sets</div>
+        <div>
+          <span class="stat-cell-value" id="statSets">3</span>
+          <span class="stat-cell-unit">sets</span>
+        </div>
+        <div class="stat-cell-change change-down">▼ adjusted</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-cell-label">Session XP</div>
+        <div>
+          <span class="stat-cell-value" id="statXP">1,250</span>
+          <span class="stat-cell-unit">pts</span>
+        </div>
+        <div class="stat-cell-change change-up">▲ earned</div>
+      </div>
+    </div>
+
+    <!-- Session history -->
+    <div class="history-section" id="historyList">
+      <div class="rp-label" style="margin-bottom:8px; font-size:9px; letter-spacing:3px">
+        Recent Sessions
+      </div>
+      <div class="history-item">
+        <div>
+          <div class="history-goal">Fat Loss</div>
+          <div class="history-meta">28 days · Advanced</div>
+        </div>
+        <div class="history-xp">1,400 XP</div>
+      </div>
+      <div class="history-item">
+        <div>
+          <div class="history-goal">Muscle Gain</div>
+          <div class="history-meta">21 days · Intermediate</div>
+        </div>
+        <div class="history-xp">750 XP</div>
+      </div>
+      <div class="history-item">
+        <div>
+          <div class="history-goal">Fat Loss</div>
+          <div class="history-meta">14 days · Beginner</div>
+        </div>
+        <div class="history-xp">300 XP</div>
+      </div>
+    </div>
+
+  </aside>
+
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
+<!-- Scripts -->
+<script src="js/config.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/ai-coach.js"></script>
+
+</body>
+</html>

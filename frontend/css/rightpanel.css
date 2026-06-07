@@ -1,0 +1,259 @@
+/* ════════════════════════════════════════
+   rightpanel.css — Right stats & bio panel
+   ════════════════════════════════════════ */
+
+.right-panel {
+  background:     var(--panel);
+  border-left:    1px solid var(--border);
+  display:        flex;
+  flex-direction: column;
+  overflow:       hidden;
+  position:       relative;
+}
+
+.right-panel::before {
+  content:    '';
+  position:   absolute;
+  top: 0; left: 0; right: 0;
+  height:     2px;
+  background: var(--red);
+  opacity:    0.5;
+}
+
+/* ── Vertical progress bar (right edge) ── */
+.right-bar {
+  position:   absolute;
+  right: 0; top: 0; bottom: 0;
+  width:      3px;
+  background: var(--border);
+}
+
+.right-bar-fill {
+  position:   absolute;
+  bottom: 0; left: 0; right: 0;
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red-glow);
+  transition: height 0.5s ease;
+}
+
+/* ── Section wrapper ── */
+.rp-section {
+  border-bottom: 1px solid var(--border);
+  padding:       20px;
+  flex-shrink:   0;
+}
+
+.rp-label {
+  font-family:     var(--mono);
+  font-size:       10px;
+  color:           var(--text-muted);
+  letter-spacing:  3px;
+  text-transform:  uppercase;
+  margin-bottom:   12px;
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+}
+
+/* ── LIVE badge ── */
+.live-badge {
+  font-family:    var(--mono);
+  font-size:      9px;
+  color:          var(--red);
+  letter-spacing: 2px;
+  display:        flex;
+  align-items:    center;
+  gap:            4px;
+}
+
+.live-dot {
+  width:       5px;
+  height:      5px;
+  background:  var(--red);
+  border-radius: 50%;
+  animation:   livePulse 1s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* ── BPM display ── */
+.bpm-value {
+  font-family:    var(--display);
+  font-size:      72px;
+  font-weight:    900;
+  font-style:     italic;
+  line-height:    1;
+  color:          var(--text);
+  letter-spacing: -3px;
+}
+
+.bpm-unit {
+  font-family:    var(--mono);
+  font-size:      12px;
+  color:          var(--text-dim);
+  letter-spacing: 2px;
+  margin-left:    4px;
+  vertical-align: bottom;
+  line-height:    2;
+}
+
+/* ── Heartbeat waveform ── */
+.waveform {
+  display:     flex;
+  align-items: center;
+  gap:         4px;
+  margin-top:  12px;
+  height:      24px;
+}
+
+.wave-bar {
+  width:        14px;
+  background:   var(--red);
+  border-radius: 1px;
+  animation:    wave 1.2s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(1) { height: 6px;  animation-delay: 0s;   }
+.wave-bar:nth-child(2) { height: 14px; animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { height: 22px; animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { height: 10px; animation-delay: 0.3s; }
+.wave-bar:nth-child(5) { height: 18px; animation-delay: 0.4s; }
+.wave-bar:nth-child(6) { height: 8px;  animation-delay: 0.5s; }
+.wave-bar:nth-child(7) { height: 4px;  animation-delay: 0.6s; opacity: 0.3; }
+.wave-bar:nth-child(8) { height: 4px;  animation-delay: 0.7s; opacity: 0.2; }
+
+@keyframes wave {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* ── Readiness score ── */
+.readiness-number {
+  font-family: var(--display);
+  font-size:   56px;
+  font-weight: 900;
+  font-style:  italic;
+  line-height: 1;
+  color:       var(--text);
+}
+
+.readiness-denom {
+  font-family:    var(--mono);
+  font-size:      14px;
+  color:          var(--text-dim);
+  vertical-align: bottom;
+  line-height:    2;
+}
+
+.readiness-sub {
+  font-family:    var(--mono);
+  font-size:      10px;
+  color:          var(--text-dim);
+  letter-spacing: 1px;
+  margin-top:     8px;
+  line-height:    1.6;
+  text-transform: uppercase;
+}
+
+.readiness-status {
+  font-family:    var(--mono);
+  font-size:      11px;
+  color:          var(--red);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ── Stats 2×2 grid ── */
+.stats-grid {
+  display:               grid;
+  grid-template-columns: 1fr 1fr;
+  gap:                   1px;
+  background:            var(--border);
+  border-top:            1px solid var(--border);
+}
+
+.stat-cell {
+  background: var(--panel);
+  padding:    14px 16px;
+}
+
+.stat-cell-label {
+  font-family:    var(--mono);
+  font-size:      9px;
+  color:          var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom:  6px;
+}
+
+.stat-cell-value {
+  font-family: var(--display);
+  font-size:   22px;
+  font-weight: 700;
+  font-style:  italic;
+  color:       var(--text);
+}
+
+.stat-cell-unit {
+  font-family: var(--mono);
+  font-size:   10px;
+  color:       var(--text-dim);
+  margin-left: 3px;
+}
+
+.stat-cell-change {
+  font-family:    var(--mono);
+  font-size:      9px;
+  margin-top:     3px;
+  letter-spacing: 1px;
+}
+
+.change-up   { color: var(--green); }
+.change-down { color: var(--red); }
+
+/* ── Session history list ── */
+.history-section {
+  flex:       1;
+  padding:    16px 20px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--red) transparent;
+}
+
+.history-item {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+  padding:         8px 0;
+  border-bottom:   1px solid var(--border);
+  opacity:         0.7;
+  transition:      opacity 0.2s;
+}
+
+.history-item:hover { opacity: 1; }
+
+.history-goal {
+  font-family: var(--display);
+  font-size:   14px;
+  font-weight: 700;
+  font-style:  italic;
+  text-transform: uppercase;
+}
+
+.history-meta {
+  font-family:    var(--mono);
+  font-size:      9px;
+  color:          var(--text-muted);
+  letter-spacing: 1px;
+  text-align:     right;
+}
+
+.history-xp {
+  font-family:    var(--mono);
+  font-size:      10px;
+  color:          var(--red);
+  letter-spacing: 1px;
+}

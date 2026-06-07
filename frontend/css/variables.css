@@ -1,0 +1,54 @@
+/* ════════════════════════════════════════
+   variables.css — Design tokens & base reset
+   ════════════════════════════════════════ */
+
+:root {
+  /* Colors */
+  --red:         #FF1A1A;
+  --red-dim:     #CC1111;
+  --red-glow:    rgba(255, 26, 26, 0.35);
+  --red-faint:   rgba(255, 26, 26, 0.08);
+  --green:       #00FF88;
+  --yellow:      #FFD700;
+
+  /* Backgrounds */
+  --bg:     #080808;
+  --bg2:    #0f0f0f;
+  --bg3:    #151515;
+  --panel:  #111111;
+
+  /* Borders */
+  --border:     #222222;
+  --border-red: rgba(255, 26, 26, 0.3);
+
+  /* Text */
+  --text:       #FFFFFF;
+  --text-dim:   #888888;
+  --text-muted: #444444;
+
+  /* Typography */
+  --mono:    'Share Tech Mono', monospace;
+  --display: 'Barlow Condensed', sans-serif;
+  --body:    'Rajdhani', sans-serif;
+}
+
+/* ── Reset ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  background:  var(--bg);
+  color:       var(--text);
+  font-family: var(--body);
+  height:      100%;
+  overflow:    hidden;
+  cursor:      crosshair;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar       { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--red-dim); }
